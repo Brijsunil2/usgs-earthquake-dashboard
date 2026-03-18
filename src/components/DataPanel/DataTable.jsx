@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import useEarthquakeStore from '../../store/useEarthquakeStore';
+import { formatDateTime } from '../../utils/dateUtils';
 
 const DEFAULT_COLUMNS = ['time', 'mag', 'place', 'type', 'depth', 'status'];
+const HEADER_MAP = {
+  time: 'Date & Time',
+  mag: 'Magnitude',
+  place: 'Location',
+  type: 'Type',
+  depth: 'Depth (km)',
+  status: 'Status',
+};
 const INITIAL_ROWS = 100;
 const BATCH_SIZE = 50;
 
@@ -13,17 +22,22 @@ const TableRow = memo(({ row, headers, isSelected, onSelect }) => (
       ${isSelected ? 'bg-accent/20' : 'hover:bg-white/5'}
     `}
   >
-    {headers.map((header) => (
-      <td 
-        key={`${row.id}-${header}`} 
-        className={`
-          px-4 py-3 text-sm whitespace-nowrap
-          ${isSelected ? 'text-text-primary font-medium' : 'text-text-secondary group-hover:text-text-primary'}
-        `}
-      >
-        {row[header]}
-      </td>
-    ))}
+    {headers.map((header) => {
+      const value = row[header];
+      const displayValue = header === 'time' ? formatDateTime(value) : value;
+      
+      return (
+        <td 
+          key={`${row.id}-${header}`} 
+          className={`
+            px-4 py-3 text-sm whitespace-nowrap
+            ${isSelected ? 'text-text-primary font-medium' : 'text-text-secondary group-hover:text-text-primary'}
+          `}
+        >
+          {displayValue}
+        </td>
+      );
+    })}
   </tr>
 ));
 
@@ -79,7 +93,7 @@ const DataTable = () => {
                 key={header} 
                 className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-text-secondary border-b border-card-border"
               >
-                {header}
+                {HEADER_MAP[header] || header}
               </th>
             ))}
           </tr>
