@@ -1,3 +1,14 @@
-@import './variables.css';
-@import './base.css';
-@import './layout.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary antialiased min-h-screen flex flex-col font-sans;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    @apply flex flex-1 justify-center items-center p-8;
+  }
+}

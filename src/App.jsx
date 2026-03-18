@@ -3,7 +3,7 @@ import DataPanel from './components/DataPanel/DataPanel';
 
 function App() {
   return (
-    <div className="app-container">
+    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-[1400px] h-auto lg:h-[85vh] justify-center items-stretch">
       <ChartPanel />
       <DataPanel />
     </div>
