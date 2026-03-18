@@ -1,0 +1,16 @@
+.app-container {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1400px;
+  height: 85vh;
+  justify-content: center;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .app-container {
+    flex-direction: column;
+    height: auto;
+  }
+}
