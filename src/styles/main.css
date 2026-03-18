@@ -11,4 +11,17 @@
   #root {
     @apply flex flex-1 justify-center items-center p-8;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-card-border rounded-full hover:bg-text-secondary/30 transition-colors;
+  }
 }
