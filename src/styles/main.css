@@ -25,3 +25,12 @@
     @apply bg-card-border rounded-full hover:bg-text-secondary/30 transition-colors;
   }
 }
+
+/* Fix: Remove focus outline from chart and its inner elements */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-wrapper *,
+.recharts-surface * {
+  outline: none !important;
+  box-shadow: none !important;
+}
