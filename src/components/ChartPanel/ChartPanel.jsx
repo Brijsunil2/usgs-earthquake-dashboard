@@ -18,13 +18,30 @@ const ChartPanel = memo(() => {
   const { earthquakes, selectedId, setSelectedId } = useEarthquakeStore();
   const [xAxis, setXAxis] = useState('mag');
   const [yAxis, setYAxis] = useState('depth');
+  const [selectionTooltip, setSelectionTooltip] = useState(null);
+  const selectionRef = React.useRef(null);
 
   const chartData = useChartData(earthquakes, xAxis, yAxis);
+
+  // Sync selection tooltip position after render pass
+  React.useEffect(() => {
+    const current = selectionRef.current;
+    if (current?.payload?.id !== selectionTooltip?.payload?.id || 
+        current?.cx !== selectionTooltip?.cx || 
+        current?.cy !== selectionTooltip?.cy) {
+      setSelectionTooltip(current);
+    }
+  });
 
   const renderShape = useCallback((props) => {
     const { cx, cy, payload } = props;
     if (!cx || !cy) return null;
     const isSelected = payload?.id === selectedId;
+    
+    if (isSelected) {
+      selectionRef.current = { cx, cy, payload };
+    }
+
     return (
       <circle 
         cx={cx} 
@@ -93,6 +110,26 @@ const ChartPanel = memo(() => {
             />
           </ScatterChart>
         </ResponsiveContainer>
+
+        {/* Programmatic Selection Tooltip */}
+        {selectionTooltip && (
+          <div 
+            className="absolute pointer-events-none z-20 transition-all duration-200"
+            style={{ 
+              left: selectionTooltip.cx, 
+              top: selectionTooltip.cy,
+              transform: 'translate(-50%, -110%)' 
+            }}
+          >
+            <ChartTooltip 
+              active={true} 
+              payload={[
+                { payload: selectionTooltip.payload, value: selectionTooltip.payload[xAxis] },
+                { payload: selectionTooltip.payload, value: selectionTooltip.payload[yAxis] }
+              ]} 
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-4 flex justify-between items-center text-[10px] text-text-secondary/60 italic px-2">
