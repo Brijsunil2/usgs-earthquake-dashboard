@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
+import React, { useMemo, memo } from 'react';
 import useEarthquakeStore from '../../store/useEarthquakeStore';
 import { CHART_LIMIT } from '../../constants/chartConfig';
 import { formatDateTime } from '../../utils/dateUtils';
@@ -12,8 +12,6 @@ const HEADER_MAP = {
   depth: 'Depth (km)',
   status: 'Status',
 };
-const INITIAL_ROWS = 100;
-const BATCH_SIZE = 50;
 
 const TableRow = memo(({ row, headers, isSelected, onSelect }) => (
   <tr 
@@ -44,13 +42,11 @@ const TableRow = memo(({ row, headers, isSelected, onSelect }) => (
 
 const DataTable = () => {
   const { earthquakes, selectedId, setSelectedId } = useEarthquakeStore();
-  const [visibleCount, setVisibleCount] = useState(INITIAL_ROWS);
-  const observerRef = useRef();
   
-  // Memoize visible records to prevent unnecessary calculations
-  const visibleEarthquakes = useMemo(() => 
-    earthquakes.slice(0, Math.min(visibleCount, CHART_LIMIT)), 
-  [earthquakes, visibleCount]);
+  // Memoize records to prevent unnecessary calculations
+  const displayEarthquakes = useMemo(() => 
+    earthquakes.slice(0, CHART_LIMIT), 
+  [earthquakes]);
 
   const headers = useMemo(() => {
     if (earthquakes.length === 0) return [];
@@ -58,23 +54,6 @@ const DataTable = () => {
     // Filter to important columns first, then add any missing defaults
     return DEFAULT_COLUMNS.filter(col => allKeys.includes(col));
   }, [earthquakes]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && visibleCount < earthquakes.length) {
-          setVisibleCount(prev => Math.min(prev + BATCH_SIZE, earthquakes.length));
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [visibleCount, earthquakes.length]);
 
   if (!earthquakes || earthquakes.length === 0) {
     return (
@@ -100,7 +79,7 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody className="divide-y divide-card-border">
-          {visibleEarthquakes.map((row, index) => (
+          {displayEarthquakes.map((row, index) => (
             <TableRow 
               key={row.id || index}
               row={row}
@@ -111,16 +90,6 @@ const DataTable = () => {
           ))}
         </tbody>
       </table>
-      
-      {/* Sentinel element for infinite scroll */}
-      {visibleCount < earthquakes.length && (
-        <div 
-          ref={observerRef} 
-          className="h-20 flex justify-center items-center text-text-secondary/50 text-xs italic"
-        >
-          Loading more records ({visibleCount} of {earthquakes.length})...
-        </div>
-      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import useEarthquakeData from '../../hooks/useEarthquakeData';
 import DataTable from './DataTable';
+import { CHART_LIMIT } from '../../constants/chartConfig';
 import Spinner from '../Spinner/Spinner';
 
 const DataPanel = () => {
@@ -25,7 +26,13 @@ const DataPanel = () => {
           <p className="text-xs opacity-80">{error}</p>
         </div>
       ) : (
-        <DataTable />
+        <>
+          <DataTable />
+          <div className="mt-4 flex justify-between items-center text-[10px] text-text-secondary/60 italic px-2">
+            <p>Showing latest {CHART_LIMIT} records</p>
+            <p>Click a row to view details and select</p>
+          </div>
+        </>
       )}
     </div>
   );
