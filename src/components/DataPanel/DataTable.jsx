@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import useEarthquakeStore from '../../store/useEarthquakeStore';
+import { CHART_LIMIT } from '../../constants/chartConfig';
 import { formatDateTime } from '../../utils/dateUtils';
 
 const DEFAULT_COLUMNS = ['time', 'mag', 'place', 'type', 'depth', 'status'];
@@ -48,7 +49,7 @@ const DataTable = () => {
   
   // Memoize visible records to prevent unnecessary calculations
   const visibleEarthquakes = useMemo(() => 
-    earthquakes.slice(0, visibleCount), 
+    earthquakes.slice(0, Math.min(visibleCount, CHART_LIMIT)), 
   [earthquakes, visibleCount]);
 
   const headers = useMemo(() => {

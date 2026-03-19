@@ -6,7 +6,7 @@ const DataPanel = () => {
   const { loading, error } = useEarthquakeData();
 
   return (
-    <div className="flex-1 h-[50vh] lg:h-auto bg-card-bg backdrop-blur-md border border-card-border rounded-3xl p-6 lg:p-8 flex flex-col shadow-xl transition-transform transition-shadow duration-300 ease-in-out overflow-hidden">
+    <div className="flex-1 h-[50vh] lg:h-full bg-card-bg backdrop-blur-md border border-card-border rounded-3xl p-6 lg:p-8 flex flex-col shadow-xl transition-transform transition-shadow duration-300 ease-in-out overflow-hidden">
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-xl font-semibold bg-accent-gradient bg-clip-text text-transparent inline-block">
           Live Earthquake Data

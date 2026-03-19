@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const ChartTooltip = ({ active, payload }) => {
+const ChartTooltip = memo(({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -17,6 +17,6 @@ const ChartTooltip = ({ active, payload }) => {
     );
   }
   return null;
-};
+});
 
 export default ChartTooltip;

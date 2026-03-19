@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import {
   ScatterChart,
   Scatter,
@@ -6,8 +6,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
 import useEarthquakeStore from '../../store/useEarthquakeStore';
 import { useChartData } from '../../hooks/useChartData';
@@ -22,8 +21,24 @@ const ChartPanel = memo(() => {
 
   const chartData = useChartData(earthquakes, xAxis, yAxis);
 
+  const renderShape = useCallback((props) => {
+    const { cx, cy, payload } = props;
+    if (!cx || !cy) return null;
+    const isSelected = payload?.id === selectedId;
+    return (
+      <circle 
+        cx={cx} 
+        cy={cy} 
+        r={isSelected ? 6 : 4} 
+        fill={isSelected ? 'var(--accent-color)' : 'rgba(255,255,255,0.2)'}
+        stroke={isSelected ? '#fff' : 'none'}
+        strokeWidth={1}
+      />
+    );
+  }, [selectedId]);
+
   return (
-    <div className="flex-1 h-[50vh] lg:h-auto bg-card-bg backdrop-blur-md border border-card-border rounded-3xl p-6 lg:p-8 flex flex-col shadow-xl transition-all duration-300">
+    <div className="flex-1 h-[50vh] lg:h-full bg-card-bg backdrop-blur-md border border-card-border rounded-3xl p-6 lg:p-8 flex flex-col shadow-xl transition-all duration-300">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-xl font-semibold bg-accent-gradient bg-clip-text text-transparent">
           Earthquake Analysis
@@ -36,8 +51,8 @@ const ChartPanel = memo(() => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-[300px] w-full mt-2">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 w-full mt-2 relative min-h-0 min-w-0">
+        <ResponsiveContainer width="100%" height="100%" debounce={50}>
           <ScatterChart 
             margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
             tabIndex={-1}
@@ -72,18 +87,10 @@ const ChartPanel = memo(() => {
               data={chartData}
               onClick={(data) => data?.id && setSelectedId(data.id)}
               className="cursor-pointer"
-            >
-              {chartData.map((entry, index) => (
-                <Cell
-                  key={entry.id || `cell-${index}`}
-                  fill={entry.id === selectedId ? 'var(--accent-color)' : 'rgba(255,255,255,0.2)'}
-                  stroke={entry.id === selectedId ? '#fff' : 'none'}
-                  strokeWidth={1}
-                  r={entry.id === selectedId ? 6 : 4}
-                  className="transition-all duration-300"
-                />
-              ))}
-            </Scatter>
+              tabIndex={-1}
+              isAnimationActive={false}
+              shape={renderShape}
+            />
           </ScatterChart>
         </ResponsiveContainer>
       </div>

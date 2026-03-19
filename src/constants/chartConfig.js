@@ -8,4 +8,4 @@ export const AXIS_OPTIONS = [
   { label: 'Gap', value: 'gap' },
 ];
 
-export const CHART_LIMIT = 1000;
+export const CHART_LIMIT = 500;
