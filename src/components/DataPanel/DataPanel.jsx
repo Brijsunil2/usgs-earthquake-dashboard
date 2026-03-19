@@ -1,5 +1,6 @@
 import useEarthquakeData from '../../hooks/useEarthquakeData';
 import DataTable from './DataTable';
+import Spinner from '../Spinner/Spinner';
 
 const DataPanel = () => {
   const { loading, error } = useEarthquakeData();
@@ -11,7 +12,10 @@ const DataPanel = () => {
           Live Earthquake Data
         </h2>
         {loading && (
-          <span className="text-xs text-text-secondary animate-pulse">Updating metadata...</span>
+          <div className="flex items-center gap-2 text-text-secondary">
+            <Spinner size="sm" />
+            <span className="text-xs font-medium">Loading Data</span>
+          </div>
         )}
       </div>
       
