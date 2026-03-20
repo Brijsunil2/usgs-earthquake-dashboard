@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { formatDateTime } from '../../utils/dateUtils';
 
 const ChartTooltip = memo(({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -12,7 +13,9 @@ const ChartTooltip = memo(({ active, payload }) => {
         <p className="text-text-secondary">
           <span className="font-medium text-text-primary">Y:</span> {payload[1].value}
         </p>
-        <p className="text-[10px] text-text-secondary/50 mt-1 italic">{data.time}</p>
+        <p className="text-[10px] text-text-secondary/50 mt-1 italic">
+          {formatDateTime(data.time)}
+        </p>
       </div>
     );
   }

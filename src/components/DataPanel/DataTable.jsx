@@ -1,4 +1,4 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, useRef, useEffect } from 'react';
 import useEarthquakeStore from '../../store/useEarthquakeStore';
 import { CHART_LIMIT } from '../../constants/chartConfig';
 import { formatDateTime } from '../../utils/dateUtils';
@@ -13,32 +13,43 @@ const HEADER_MAP = {
   status: 'Status',
 };
 
-const TableRow = memo(({ row, headers, isSelected, onSelect }) => (
-  <tr 
-    onClick={() => onSelect(row.id)}
-    className={`
-      group cursor-pointer transition-colors duration-200
-      ${isSelected ? 'bg-accent/20' : 'hover:bg-white/5'}
-    `}
-  >
-    {headers.map((header) => {
-      const value = row[header];
-      const displayValue = header === 'time' ? formatDateTime(value) : value;
-      
-      return (
-        <td 
-          key={`${row.id}-${header}`} 
-          className={`
-            px-4 py-3 text-sm whitespace-nowrap
-            ${isSelected ? 'text-text-primary font-medium' : 'text-text-secondary group-hover:text-text-primary'}
-          `}
-        >
-          {displayValue}
-        </td>
-      );
-    })}
-  </tr>
-));
+const TableRow = memo(({ row, headers, isSelected, onSelect }) => {
+  const rowRef = useRef(null);
+
+  useEffect(() => {
+    if (isSelected && rowRef.current) {
+      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isSelected]);
+
+  return (
+    <tr 
+      ref={rowRef}
+      onClick={() => onSelect(row.id)}
+      className={`
+        group cursor-pointer transition-colors duration-200
+        ${isSelected ? 'bg-accent/20' : 'hover:bg-white/5'}
+      `}
+    >
+      {headers.map((header) => {
+        const value = row[header];
+        const displayValue = header === 'time' ? formatDateTime(value) : value;
+        
+        return (
+          <td 
+            key={`${row.id}-${header}`} 
+            className={`
+              px-4 py-3 text-sm whitespace-nowrap
+              ${isSelected ? 'text-text-primary font-medium' : 'text-text-secondary group-hover:text-text-primary'}
+            `}
+          >
+            {displayValue}
+          </td>
+        );
+      })}
+    </tr>
+  );
+});
 
 const DataTable = () => {
   const { earthquakes, selectedId, setSelectedId } = useEarthquakeStore();
