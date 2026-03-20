@@ -96,7 +96,7 @@ const ChartPanel = memo(() => {
             <Tooltip
               trigger="click"
               isAnimationActive={false}
-              content={<ChartTooltip />}
+              content={() => null}
               cursor={{ strokeDasharray: '3 3', stroke: 'rgba(255,255,255,0.2)' }}
             />
             <Scatter
