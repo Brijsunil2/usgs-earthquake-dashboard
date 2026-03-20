@@ -25,10 +25,15 @@ const ChartPanel = memo(() => {
 
   // Sync selection tooltip position after render pass
   React.useEffect(() => {
+    if (!selectedId) {
+      if (selectionTooltip) setSelectionTooltip(null);
+      selectionRef.current = null;
+      return;
+    }
     const current = selectionRef.current;
-    if (current?.payload?.id !== selectionTooltip?.payload?.id || 
-        current?.cx !== selectionTooltip?.cx || 
-        current?.cy !== selectionTooltip?.cy) {
+    if (current?.payload?.id !== selectionTooltip?.payload?.id ||
+      current?.cx !== selectionTooltip?.cx ||
+      current?.cy !== selectionTooltip?.cy) {
       setSelectionTooltip(current);
     }
   });
@@ -37,16 +42,16 @@ const ChartPanel = memo(() => {
     const { cx, cy, payload } = props;
     if (!cx || !cy) return null;
     const isSelected = payload?.id === selectedId;
-    
+
     if (isSelected) {
       selectionRef.current = { cx, cy, payload };
     }
 
     return (
-      <circle 
-        cx={cx} 
-        cy={cy} 
-        r={isSelected ? 6 : 4} 
+      <circle
+        cx={cx}
+        cy={cy}
+        r={isSelected ? 6 : 4}
         fill={isSelected ? 'var(--accent-color)' : 'rgba(255,255,255,0.2)'}
         stroke={isSelected ? '#fff' : 'none'}
         strokeWidth={1}
@@ -68,9 +73,12 @@ const ChartPanel = memo(() => {
         </div>
       </div>
 
-      <div className="flex-1 w-full mt-2 relative min-h-0 min-w-0">
+      <div 
+        className="flex-1 w-full mt-2 relative min-h-0 min-w-0"
+        onClick={() => setSelectedId(null)}
+      >
         <ResponsiveContainer width="100%" height="100%" debounce={50}>
-          <ScatterChart 
+          <ScatterChart
             margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
             tabIndex={-1}
           >
@@ -102,7 +110,10 @@ const ChartPanel = memo(() => {
             <Scatter
               name="Earthquakes"
               data={chartData}
-              onClick={(data) => data?.id && setSelectedId(data.id)}
+              onClick={(data, index, e) => {
+                if (e && e.stopPropagation) e.stopPropagation();
+                if (data?.id) setSelectedId(data.id);
+              }}
               className="cursor-pointer"
               tabIndex={-1}
               isAnimationActive={false}
@@ -113,20 +124,20 @@ const ChartPanel = memo(() => {
 
         {/* Programmatic Selection Tooltip */}
         {selectionTooltip && (
-          <div 
+          <div
             className="absolute pointer-events-none z-20 transition-all duration-200"
-            style={{ 
-              left: selectionTooltip.cx, 
+            style={{
+              left: selectionTooltip.cx,
               top: selectionTooltip.cy,
-              transform: 'translate(-50%, -110%)' 
+              transform: 'translate(-50%, -110%)'
             }}
           >
-            <ChartTooltip 
-              active={true} 
+            <ChartTooltip
+              active={true}
               payload={[
                 { payload: selectionTooltip.payload, value: selectionTooltip.payload[xAxis] },
                 { payload: selectionTooltip.payload, value: selectionTooltip.payload[yAxis] }
-              ]} 
+              ]}
             />
           </div>
         )}
