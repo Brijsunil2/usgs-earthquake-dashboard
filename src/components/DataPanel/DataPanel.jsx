@@ -4,6 +4,7 @@ import { CHART_LIMIT } from '../../constants/chartConfig';
 import Spinner from '../Spinner/Spinner';
 
 const DataPanel = () => {
+  // We use our custom hook to get the status of the earthquake data.
   const { loading, error } = useEarthquakeData();
 
   return (
@@ -12,6 +13,7 @@ const DataPanel = () => {
         <h2 className="text-xl font-semibold bg-accent-gradient bg-clip-text text-transparent inline-block">
           Live Earthquake Data
         </h2>
+        {/* If we're currently fetching from the USGS, show a spinner. */}
         {loading && (
           <div className="flex items-center gap-2 text-text-secondary">
             <Spinner size="sm" />
@@ -19,13 +21,15 @@ const DataPanel = () => {
           </div>
         )}
       </div>
-      
+
+      {/* If the fetch fails (like if there's no internet), we show a clear error message. */}
       {error ? (
         <div className="flex-1 flex flex-col justify-center items-center text-red-400 p-4 text-center border border-red-900/20 rounded-2xl bg-red-900/10">
           <p className="font-semibold mb-2">Error loading data</p>
           <p className="text-xs opacity-80">{error}</p>
         </div>
       ) : (
+        /* Otherwise, we render the data table */
         <>
           <DataTable />
           <div className="mt-4 flex justify-between items-center text-[10px] text-text-secondary/60 italic px-2">

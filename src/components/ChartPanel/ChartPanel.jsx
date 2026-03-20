@@ -16,8 +16,12 @@ import ChartTooltip from './ChartTooltip';
 
 const ChartPanel = memo(() => {
   const { earthquakes, selectedId, setSelectedId } = useEarthquakeStore();
+
+  // These states track which earthquake properties are shown on the axes.
   const [xAxis, setXAxis] = useState('mag');
   const [yAxis, setYAxis] = useState('depth');
+
+  // 'selectionTooltip' holds the data needed to show our custom floating tooltip.
   const [selectionTooltip, setSelectionTooltip] = useState(null);
   const selectionRef = React.useRef(null);
 
@@ -25,11 +29,14 @@ const ChartPanel = memo(() => {
 
   // Sync selection tooltip position after render pass
   React.useEffect(() => {
+    // If nothing is selected, make sure any existing tooltip is cleared out.
     if (!selectedId) {
       if (selectionTooltip) setSelectionTooltip(null);
       selectionRef.current = null;
       return;
     }
+
+    // We only update the state if the point's position or data has actually changed.
     const current = selectionRef.current;
     if (current?.payload?.id !== selectionTooltip?.payload?.id ||
       current?.cx !== selectionTooltip?.cx ||
@@ -43,6 +50,8 @@ const ChartPanel = memo(() => {
     if (!cx || !cy) return null;
     const isSelected = payload?.id === selectedId;
 
+    // If this specific point is the one we're looking for, we save its 
+    // current screen position (cx, cy) into our Ref.
     if (isSelected) {
       selectionRef.current = { cx, cy, payload };
     }
@@ -52,9 +61,10 @@ const ChartPanel = memo(() => {
         cx={cx}
         cy={cy}
         r={isSelected ? 6 : 4}
-        fill={isSelected ? 'var(--accent-color)' : 'rgba(255,255,255,0.2)'}
+        fill={isSelected ? '#60a5fa' : 'rgba(255,255,255,0.2)'}
         stroke={isSelected ? '#fff' : 'none'}
-        strokeWidth={1}
+        strokeWidth={isSelected ? 2 : 0}
+        className="transition-all duration-200"
       />
     );
   }, [selectedId]);
@@ -73,8 +83,9 @@ const ChartPanel = memo(() => {
         </div>
       </div>
 
-      <div 
+      <div
         className="flex-1 w-full mt-2 relative min-h-0 min-w-0"
+        /* Clicking the background of the chart container will clear the current selection. */
         onClick={() => setSelectedId(null)}
       >
         <ResponsiveContainer width="100%" height="100%" debounce={50}>

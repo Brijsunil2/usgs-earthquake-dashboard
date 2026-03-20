@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import useEarthquakeStore from '../store/useEarthquakeStore';
 
 /**
- * Custom hook to fetch and provide earthquake data from global Zustand store.
- * @returns {Object} { data, loading, error, selectedId, setSelectedId, setFilters }
+ * Custom hook to fetch and provide earthquake data from our global Zustand store.
  */
 const useEarthquakeData = () => {
   const { 
@@ -17,7 +16,7 @@ const useEarthquakeData = () => {
   } = useEarthquakeStore();
 
   useEffect(() => {
-    // Only fetch if we don't already have data
+    // Fetch data if the app just loaded and we have no data.
     if (earthquakes.length === 0 && !loading && !error) {
       fetchEarthquakes();
     }

@@ -15,7 +15,7 @@ const useEarthquakeStore = create((set) => ({
     endTime: null,
   },
 
-  // Actions
+  // Fetch data from USGS API
   fetchEarthquakes: async () => {
     set({ loading: true, error: null });
     try {
@@ -24,6 +24,7 @@ const useEarthquakeStore = create((set) => ({
         throw new Error(`Failed to fetch earthquake data: ${response.statusText}`);
       }
       const csvText = await response.text();
+      // Parse the raw text into actual JS objects.
       const parsedData = parseCSV(csvText);
       set({ earthquakes: parsedData, loading: false });
     } catch (error) {
@@ -31,12 +32,15 @@ const useEarthquakeStore = create((set) => ({
     }
   },
 
+  // Updates the global selection. This syncs the chart and table.
   setSelectedId: (id) => set({ selectedId: id }),
 
+  // Allows updating specific filters without losing the others.
   setFilters: (newFilters) => set((state) => ({
     filters: { ...state.filters, ...newFilters }
   })),
 
+  // Deselect everything.
   clearSelection: () => set({ selectedId: null }),
 }));
 

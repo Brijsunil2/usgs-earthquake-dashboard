@@ -16,6 +16,7 @@ const HEADER_MAP = {
 const TableRow = memo(({ row, headers, isSelected, onSelect }) => {
   const rowRef = useRef(null);
 
+  // Automatically scroll to data point on selection
   useEffect(() => {
     if (isSelected && rowRef.current) {
       rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -23,24 +24,24 @@ const TableRow = memo(({ row, headers, isSelected, onSelect }) => {
   }, [isSelected]);
 
   return (
-    <tr 
+    <tr
       ref={rowRef}
       onClick={() => onSelect(row.id)}
       className={`
         group cursor-pointer transition-colors duration-200
-        ${isSelected ? 'bg-accent/20' : 'hover:bg-white/5'}
+        ${isSelected ? 'bg-accent/40' : 'hover:bg-white/5'}
       `}
     >
       {headers.map((header) => {
         const value = row[header];
         const displayValue = header === 'time' ? formatDateTime(value) : value;
-        
+
         return (
-          <td 
-            key={`${row.id}-${header}`} 
+          <td
+            key={`${row.id}-${header}`}
             className={`
               px-4 py-3 text-sm whitespace-nowrap
-              ${isSelected ? 'text-text-primary font-medium' : 'text-text-secondary group-hover:text-text-primary'}
+              ${isSelected ? 'text-white font-bold' : 'text-text-secondary group-hover:text-text-primary'}
             `}
           >
             {displayValue}
@@ -53,11 +54,11 @@ const TableRow = memo(({ row, headers, isSelected, onSelect }) => {
 
 const DataTable = () => {
   const { earthquakes, selectedId, setSelectedId } = useEarthquakeStore();
-  
-  // Memoize records to prevent unnecessary calculations
-  const displayEarthquakes = useMemo(() => 
-    earthquakes.slice(0, CHART_LIMIT), 
-  [earthquakes]);
+
+  // Cap the list at 500 records so the browser stays snappy
+  const displayEarthquakes = useMemo(() =>
+    earthquakes.slice(0, CHART_LIMIT),
+    [earthquakes]);
 
   const headers = useMemo(() => {
     if (earthquakes.length === 0) return [];
@@ -80,8 +81,8 @@ const DataTable = () => {
         <thead className="sticky top-0 z-10 bg-background/95 backdrop-blur-md shadow-sm">
           <tr>
             {headers.map((header) => (
-              <th 
-                key={header} 
+              <th
+                key={header}
                 className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-text-secondary border-b border-card-border"
               >
                 {HEADER_MAP[header] || header}
@@ -91,7 +92,7 @@ const DataTable = () => {
         </thead>
         <tbody className="divide-y divide-card-border">
           {displayEarthquakes.map((row, index) => (
-            <TableRow 
+            <TableRow
               key={row.id || index}
               row={row}
               headers={headers}
